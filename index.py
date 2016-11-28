@@ -4,12 +4,14 @@ from flask_script import Manager
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
+from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 manager = Manager(app)
 app.secret_key = '123'
+db = SQLAlchemy(app)
 
 class RegForm(FlaskForm ):
 	SECRET_KEY = '123'
