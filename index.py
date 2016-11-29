@@ -1,20 +1,60 @@
 from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
-from flask_script import Manager
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
+from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
+import os
+
 
 
 app = Flask(__name__)
+DB_USERNAME = os.environ.get('DB_USERNAME')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://' + DB_USERNAME + ':' + DB_PASSWORD + '@localhost/TODO'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 bootstrap = Bootstrap(app)
 manager = Manager(app)
-app.secret_key = '123'
 db = SQLAlchemy(app)
+app.secret_key = os.environ.get('SECRET_KEY')
+
+# app = Flask(__name__)
+# app.config.from_object(config[config_name])
+# config[config_name].init_app(app)
+# bootstrap.init_app(app)
+# db.init_app(app)
+
+def create_app(config_name):
+    app = Flask(__name__)
+    app.config.from_object(config[config_name])
+    config[config_name].init_app(app)
+    # bootstrap.init_app(app)
+    # db.init_app(app)
+    return app
+
+
+
+class Test(db.Model):
+	__tablename__ = 'test'
+	id = db.Column('id', db.Integer, primary_key=True)
+	data = db.Column('data', db.Unicode)
+	# ?end of class?
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), unique=True)
+    username = db.Column(db.String(64), unique=True)
+    password_hash = db.Column(db.String(128))
+
+    def __init__(self, email, username, password_hash):
+        self.email = email
+        self.username = username
+        self.password_hash = password_hash	
 
 class RegForm(FlaskForm ):
-	SECRET_KEY = '123'
+	SECRET_KEY = os.environ.get('SECRET_KEY')
 	email = StringField()
 	email_conf = StringField('Confirm Email')
 	name = StringField()
@@ -37,7 +77,5 @@ def reg():
 # @app.route ("/todo"):
 # def todo():	
 
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
     manager.run()
-
