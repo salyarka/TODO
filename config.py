@@ -8,7 +8,7 @@ class Config:
 	DB_USERNAME = os.environ.get('DB_USERNAME')
 	DB_PASSWORD = os.environ.get('DB_PASSWORD')
 	SQLALCHEMY_DATABASE_URI = 'mysql://' + DB_USERNAME + ':' + DB_PASSWORD + '@localhost/TODO'
-	SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+	SQLALCHEMY_COMMIT_ON_TEARDOWN = False
 
 
 config = {'default': Config}	

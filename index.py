@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, DateField
 from wtforms.validators import DataRequired
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
@@ -53,8 +53,24 @@ class User(db.Model):
         self.username = username
         self.password_hash = password_hash	
 
+# class Todo(db.model):
+    # title = 
+    # create_date =
+    # deadline = 
+    # description =
+    # tags =
+    # user_id = 
+
+class TodoForm(FlaskForm):
+    title = StringField()
+    deadline = DateField()
+    description = StringField()
+    tags = StringField()
+    create = SubmitField()
+    
+   
+
 class RegForm(FlaskForm ):
-	SECRET_KEY = os.environ.get('SECRET_KEY')
 	email = StringField()
 	email_conf = StringField('Confirm Email')
 	name = StringField()
@@ -74,8 +90,10 @@ def reg():
 		return render_template('register.html', form=form)
 	# else:	
 
-# @app.route ("/todo"):
-# def todo():	
+@app.route ("/todo")
+def todo():	
+    form = TodoForm()
+    return render_template('todo.html', form=form)
 
 if __name__ == '__main__':
     manager.run()
