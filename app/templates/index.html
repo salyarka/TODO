@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-    <h1>dadada</h1>
+    {% if current_user.is_authenticated %}
+  		<h1>Здравствуйте {{ current_user.username }}!</h1>
+  	{% else %}	
+  		<h1>Здравствуйте, чтобы просмотреть список дел вам необходимо авторизоваться</h1>
+	{% endif %}
 {% endblock %}
