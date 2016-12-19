@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login_manager
 from flask import redirect, url_for
+from datetime import datetime
 
 
 @login_manager.user_loader
@@ -33,10 +34,13 @@ class User(db.Model, UserMixin):
     return check_password_hash(self.password_hash, password)
 
 
-# class Todo(db.model):
-#   title = 
-#   create_date =
-#   deadline = 
-#   description =
-#   tags =
-#   user_id =
+class Todo(db.Model):
+  __tablename__ = 'todo'
+  id = db.Column(db.Integer, primary_key=True)
+  title = db.Column(db.String(128))
+  description = db.Column(db.Text)
+  date_created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
+
+  def __init__(self, title, description):
+    self.title = title
+    self.description = description

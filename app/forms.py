@@ -1,13 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, DateField, ValidationError, HiddenField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from app.models import User
 
 class TodoForm(FlaskForm):
   title = StringField('Название', validators=[Required()])
-  deadline = DateField('Срок выполнения')
   description = StringField('Описание')
-  # tags = StringField()
   create = SubmitField('Создать')
     
    
@@ -38,5 +36,3 @@ class LogForm(FlaskForm):
   email = StringField('Эл. почта', validators=[Required(), Email()])
   password = PasswordField('Пароль', validators=[Required()])
   submit = SubmitField('Войти')
-    
-  

@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for, abort
 from app.forms import RegForm, TodoForm, LogForm
-from app.models import User
+from app.models import User, Todo
 from flask_login import login_user, login_required, logout_user
 
 
@@ -53,9 +53,23 @@ def logout():
   return redirect(url_for('home'))
 
 
-
-@app.route ("/todo")
+@app.route ("/todo", methods=['GET', 'POST'])
 @login_required
 def todo():	
   form = TodoForm()
-  return render_template('todo.html', form=form)
+  todos = Todo.query.order_by('date_created')
+  if form.validate_on_submit():
+    todo = Todo(form.title.data, form.description.data)
+    db.session.add(todo)
+    db.session.commit()
+    flash('Задача добавлена')
+    return redirect(url_for('todo'))
+  return render_template('todo.html', todos=todos, form=form)
+
+
+@app.route("/delete/<string:todo_id>")
+def delete(todo_id):
+  todo = Todo.query.filter_by(id=todo_id).first()
+  db.session.delete(todo)
+  db.session.commit()
+  return redirect(url_for('todo'))

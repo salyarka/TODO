@@ -2,11 +2,33 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>TODO</h1>
-</div>
-<div class="col-md-4">
-   <p>tralala</p>
-   {{ wtf.quick_form(form) }}
-</div>
+	<div class="col-sm-3 sidenav">
+		{{ wtf.quick_form(form) }}
+    </div>
+    <div class="col-sm-9">
+    	<h1>TODO</h1>
+    	{% if todos %}
+    		<table class="table">
+    			<thead>
+    				<tr>
+    					<th>Задача</th>
+    					<th>Описание</th>
+    					<th>Дата добавления</th>
+    				</tr>
+    			</thead>
+    			<tbody>
+    				{% for each in todos %}
+    					<tr>
+    						<td>{{ each.title }}</td>
+    						<td>{{ each.description }}</td>
+    						<td>{{ each.date_created }}</td>
+    						<td><a href="/delete/{{ each.id }}" class="btn btn-danger">Удалить</a></td>		
+    					</tr>
+    				{% endfor %}
+    			</tbody>
+    		</table>
+    	{% else %}
+    		<h3>Нет задач</h3>
+    	{% endif %}		
+    </div>
 {% endblock %}
