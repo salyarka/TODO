@@ -44,3 +44,7 @@ class Todo(db.Model):
   def __init__(self, title, description):
     self.title = title
     self.description = description
+
+
+# Тралала здесь все потерял, были контролеры типа delete/<string:todo_id> 
+# и delete/<string:todo_id>
