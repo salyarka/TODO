@@ -3,13 +3,13 @@ from wtforms import StringField, PasswordField, SubmitField, DateField, Validati
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from app.models import User
 
+
 class TodoForm(FlaskForm):
   title = StringField('Название', validators=[Required()])
   description = StringField('Описание')
   create = SubmitField('Создать')
     
    
-
 class RegForm(FlaskForm ):
   email = StringField('Эл. почта', validators=[Required(), Length(1, 64),
                                              Email()])
@@ -32,7 +32,12 @@ class RegForm(FlaskForm ):
       # raise ValidationError('Пользователь с таким именем уже существует.')
       return True
 
+
 class LogForm(FlaskForm):
   email = StringField('Эл. почта', validators=[Required(), Email()])
   password = PasswordField('Пароль', validators=[Required()])
   submit = SubmitField('Войти')
+
+
+class TodoListForm(FlaskForm):
+  pass  
