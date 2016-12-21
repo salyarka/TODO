@@ -9,7 +9,6 @@ class TodoForm(FlaskForm):
   create = SubmitField('Создать')
     
    
-
 class RegForm(FlaskForm ):
   email = StringField('Эл. почта', validators=[Required(), Length(1, 64),
                                              Email()])
