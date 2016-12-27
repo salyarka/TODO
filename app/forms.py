@@ -5,39 +5,41 @@ from app.models import User
 
 
 class TodoForm(FlaskForm):
-  title = StringField('Название', validators=[Required()])
-  description = StringField('Описание')
-  create = SubmitField('Создать')
-    
-   
-class RegForm(FlaskForm ):
-  email = StringField('Эл. почта', validators=[Required(), Length(1, 64),
-                                             Email()])
-  username = StringField('Имя', validators=[
+    title = StringField('Название', validators=[Required()])
+    description = StringField('Описание')
+    create = SubmitField('Создать')
+
+
+class RegForm(FlaskForm):
+    email = StringField('Эл. почта', validators=[Required(), Length(1, 64),
+                                                 Email('Неверный адресс эл. почты.')])
+    username = StringField('Имя', validators=[
         Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Имя может содержать только буквы, '
                                           'цифры, точки и подчеркивания')])
-  password = PasswordField('Пароль', validators=[
+    password = PasswordField('Пароль', validators=[
         Required(), EqualTo('password_conf', message='Введенные пароли не совпадают.')])
-  password_conf = PasswordField('Подтверждение пароля', validators=[Required()])
-  submit = SubmitField('Регистрация')
-  
-  def validate_email(self, email):
-    if User.query.filter_by(email=email).first():
-      # raise ValidationError('Такая почта уже зарегистрированна.')
-      return True
+    password_conf = PasswordField(
+        'Подтверждение пароля', validators=[Required()])
+    submit = SubmitField('Регистрация')
 
-  def validate_username(self, username):
-    if User.query.filter_by(username=username).first():
-      # raise ValidationError('Пользователь с таким именем уже существует.')
-      return True
+    def validate_email(self, email):
+        if User.query.filter_by(email=email).first():
+            # raise ValidationError('Такая почта уже зарегистрированна.')
+            return True
+
+    def validate_username(self, username):
+        if User.query.filter_by(username=username).first():
+            # raise ValidationError('Пользователь с таким именем уже существует.')
+            return True
 
 
 class LogForm(FlaskForm):
-  email = StringField('Эл. почта', validators=[Required(), Email()])
-  password = PasswordField('Пароль', validators=[Required()])
-  submit = SubmitField('Войти')
+    email = StringField('Эл. почта', validators=[Required(), Email()])
+    password = PasswordField('Пароль', validators=[Required()])
+    submit = SubmitField('Войти')
 
 
 class TodoListForm(FlaskForm):
-  pass  
+    title = StringField('Название', validators=[Required()])
+    description = StringField('Описание')

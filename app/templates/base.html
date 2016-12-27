@@ -21,6 +21,7 @@
         {% if current_user.is_authenticated %}
           <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-in"></span> Выход</a></li>
         {% else %}  
+          <li><a href="{{ url_for('reg') }}">Регистрация</a></li>
           <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Вход</a></li>
         {% endif %}  
       </ul>
