@@ -43,3 +43,4 @@ class LogForm(FlaskForm):
 class TodoListForm(FlaskForm):
     title = StringField('Название', validators=[Required()])
     description = StringField('Описание')
+    create = SubmitField('Создать')
