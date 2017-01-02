@@ -22,7 +22,12 @@
     						<td>{{ each.title }}</td>
     						<td>{{ each.description }}</td>
     						<td>{{ each.date_created }}</td>
-    						<td><a href="/delete/{{ each.id }}" class="btn btn-danger">Удалить</a></td>		
+    						<td>
+                                <form action="{{ url_for('list_del') }}" method="POST">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="submit" name="{{ each.id }}">                               
+                                </form>
+                            </td>		
     					</tr>
     				{% endfor %}
     			</tbody>

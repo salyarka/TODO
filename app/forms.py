@@ -40,7 +40,7 @@ class LogForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
-class TodoListForm(FlaskForm):
+class ListForm(FlaskForm):
     title = StringField('Название', validators=[Required()])
     description = StringField('Описание')
     create = SubmitField('Создать')

@@ -1,6 +1,6 @@
 from app import app, db
-from flask import render_template, request, flash, redirect, url_for, abort, session
-from app.forms import RegForm, TodoForm, LogForm, TodoListForm
+from flask import render_template, request, flash, redirect, url_for
+from app.forms import RegForm, TodoForm, LogForm, ListForm
 from app.models import User, Todo, TodoList
 from flask_login import login_user, login_required, logout_user
 
@@ -53,9 +53,10 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route("/list/", methods=['GET', 'POST'])
-def list(id=None):
-    form = TodoListForm()
+@app.route("/list", methods=['GET', 'POST'])
+@login_required
+def list():
+    form = ListForm()
     lists = TodoList.query.order_by('title')
     if form.validate_on_submit():
         todo_list = TodoList(form.title.data)
@@ -64,6 +65,17 @@ def list(id=None):
         flash('Список добавлен', 'alert alert-success')
         return redirect(url_for('list'))
     return render_template('todolist.html', lists=lists, form=form)
+
+
+@app.route("/list/<int:list_id>", methods=['DELETE'])
+@login_required
+def list_del(list_id):
+  todo_list = TodoList.query.filter_by(id=list_id).first()
+  db.session.delete(todo_list)
+  db.session.commit()
+  return redirect(url_for('list'))
+
+
 
 
 @app.route("/todo", methods=['GET', 'POST'])

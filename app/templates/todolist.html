@@ -6,9 +6,20 @@
 		{{ wtf.quick_form(form) }}
     </div>
     <div class="col-sm-9">
-    	<h1>Списки</h1>   	
+    	<h1>Списки</h1>   
+        <table>	
     	{% for each in lists %}
-    		<p><a href="/todolist/{{ each.id }}">{{ each.title }}</a></p><br>
+    		<tr>
+                <td><a href="/list/{{ each.id }}">{{ each.title }}</a></td>
+                <td>
+                    <form action="/list/{{each.id}}">
+                        {{ form.csrf_token }}
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="submit" value="Удалить">
+                    </form>
+                </td>
+            </tr>
     	{% endfor %}		
+        </table>
     </div>
 {% endblock %}
