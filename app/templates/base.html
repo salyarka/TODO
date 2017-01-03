@@ -42,8 +42,6 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <div class="container-fluid text-center">
-      {% block page_content %}{% endblock %}
-    </div>
+    {% block page_content %}{% endblock %}
 </div>
 {% endblock %}

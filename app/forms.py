@@ -7,6 +7,7 @@ from app.models import User
 class TodoForm(FlaskForm):
     title = StringField('Название', validators=[Required()])
     description = StringField('Описание')
+    list_id = HiddenField()
     create = SubmitField('Создать')
 
 

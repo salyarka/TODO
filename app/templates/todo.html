@@ -3,12 +3,18 @@
 
 {% block page_content %}
 	<div class="col-sm-3 sidenav">
-		{{ wtf.quick_form(form) }}
+		<form method="POST">
+            {{ form.csrf_token }}
+            {{ form.title }}
+            {{ form.description }}
+            {{ form.list_id(value=todo_list.id) }}
+            {{ form.create }}
+        </form>
     </div>
     <div class="col-sm-9">
-    	<h1>TODO</h1>
-    	{% if todos %}
-    		<table class="table">
+    	<h1>{{ todo_list.title }}</h1>
+    	{% if todo_list.todos|length > 0%}
+    		<table class="table text-left">
     			<thead>
     				<tr>
     					<th>Задача</th>
@@ -17,23 +23,17 @@
     				</tr>
     			</thead>
     			<tbody>
-    				{% for each in todos %}
+    				{% for each in todo_list.todos %}
     					<tr>
     						<td>{{ each.title }}</td>
     						<td>{{ each.description }}</td>
-    						<td>{{ each.date_created }}</td>
-    						<td>
-                                <form action="{{ url_for('list_del') }}" method="POST">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <input type="submit" name="{{ each.id }}">                               
-                                </form>
-                            </td>		
+    						<td>{{ each.date_created }}</td>		
     					</tr>
     				{% endfor %}
     			</tbody>
     		</table>
     	{% else %}
-    		<h3>Нет задач</h3>
+    		<h3>На данный момент в этом списке нет задач.</h3>
     	{% endif %}		
     </div>
 {% endblock %}

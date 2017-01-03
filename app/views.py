@@ -80,16 +80,16 @@ def list_del(list_id):
 
 @app.route("/list/<int:list_id>", methods=['GET', 'POST'])
 @login_required
-def todo():
+def todo(list_id):
     form = TodoForm()
-    todos = Todo.query.order_by('date_created')
+    todo_list = TodoList.query.filter_by(id=list_id).first()
     if form.validate_on_submit():
-        todo = Todo(form.title.data, form.description.data)
+        todo = Todo(form.title.data, form.description.data, form.list_id.data)
         db.session.add(todo)
         db.session.commit()
         flash('Задача добавлена', 'alert alert-success')
-        return redirect(url_for('todo'))
-    return render_template('todo.html', todos=todos, form=form)
+        return redirect(url_for('todo', list_id=list_id))
+    return render_template('todo.html', form=form, todo_list=todo_list)
 
 
 # @app.route("/delete/<string:todo_id>")

@@ -42,9 +42,10 @@ class Todo(db.Model):
     status = db.Column(db.Boolean, default=0)
     list_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'))
 
-    def __init__(self, title, description):
+    def __init__(self, title, description, list_id):
         self.title = title
         self.description = description
+        self.list_id = list_id
 
 
 class TodoList(db.Model):
