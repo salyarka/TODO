@@ -42,5 +42,5 @@ class LogForm(FlaskForm):
 
 class ListForm(FlaskForm):
     title = StringField('Название', validators=[Required()])
-    description = StringField('Описание')
+    user_id = HiddenField()
     create = SubmitField('Создать')

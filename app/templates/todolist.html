@@ -3,18 +3,24 @@
 
 {% block page_content %}
 	<div class="col-sm-3 sidenav">
-		{{ wtf.quick_form(form) }}
+        <form method="POST" action="">
+            {{ form.csrf_token }}
+    		{{ form.title }}
+            {{ form.user_id(value=current_user.id) }}
+            {{ form.create }}
+        </form>
     </div>
     <div class="col-sm-9">
     	<h1>Списки</h1>   
         <table>	
-    	{% for each in lists %}
+    	{% for each in current_user.todo_lists %}
     		<tr>
                 <td><a href="/list/{{ each.id }}">{{ each.title }}</a></td>
                 <td>
                     <form action="/list/{{each.id}}">
                         {{ form.csrf_token }}
                         <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="list_id" value="{{ each.id }}">
                         <input type="submit" value="Удалить">
                     </form>
                 </td>

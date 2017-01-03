@@ -41,7 +41,7 @@ def login():
         if user is not None and user.authenticate(form.password.data):
             login_user(user)
             flash('Вход произошел успешно', 'alert alert-success')
-            return redirect(url_for('todo'))
+            return redirect(url_for('list'))
         flash('Неверная эл. почта или пароль', 'alert alert-warning')
     return render_template('login.html', form=form)
 
@@ -57,19 +57,19 @@ def logout():
 @login_required
 def list():
     form = ListForm()
-    lists = TodoList.query.order_by('title')
     if form.validate_on_submit():
-        todo_list = TodoList(form.title.data)
+        todo_list = TodoList(form.title.data, form.user_id.data)
         db.session.add(todo_list)
         db.session.commit()
         flash('Список добавлен', 'alert alert-success')
         return redirect(url_for('list'))
-    return render_template('todolist.html', lists=lists, form=form)
+    return render_template('todolist.html', form=form)
 
 
 @app.route("/list/<int:list_id>", methods=['DELETE'])
 @login_required
 def list_del(list_id):
+  list_id = request.args.get('list_id')
   todo_list = TodoList.query.filter_by(id=list_id).first()
   db.session.delete(todo_list)
   db.session.commit()
@@ -78,7 +78,7 @@ def list_del(list_id):
 
 
 
-@app.route("/todo", methods=['GET', 'POST'])
+@app.route("/list/<int:list_id>", methods=['GET', 'POST'])
 @login_required
 def todo():
     form = TodoForm()
@@ -92,12 +92,12 @@ def todo():
     return render_template('todo.html', todos=todos, form=form)
 
 
-@app.route("/delete/<string:todo_id>")
-def delete(todo_id):
-    todo = Todo.query.filter_by(id=todo_id).first()
-    db.session.delete(todo)
-    db.session.commit()
-    return redirect(url_for('todo'))
+# @app.route("/delete/<string:todo_id>")
+# def delete(todo_id):
+#     todo = Todo.query.filter_by(id=todo_id).first()
+#     db.session.delete(todo)
+#     db.session.commit()
+#     return redirect(url_for('todo'))
 
 
 # @app.route("/list/<id>", methods=['GET', 'POST'])  

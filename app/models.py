@@ -20,8 +20,9 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True)
-    username = db.Column(db.String(64), unique=True)
+    username = db.Column(db.String(64))
     password_hash = db.Column(db.String(128))
+    todo_lists = db.relationship('TodoList', backref='users')
 
     def __init__(self, email, username, password):
         self.email = email
@@ -39,6 +40,7 @@ class Todo(db.Model):
     description = db.Column(db.Text)
     date_created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     status = db.Column(db.Boolean, default=0)
+    list_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'))
 
     def __init__(self, title, description):
         self.title = title
@@ -49,6 +51,10 @@ class TodoList(db.Model):
     __tablename__ = 'todo_list'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    todos = db.relationship('Todo', backref='todo_list')
 
-    def __init__(self, title):
+
+    def __init__(self, title, user_id):
         self.title = title
+        self.user_id = user_id
