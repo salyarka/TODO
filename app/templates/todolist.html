@@ -17,12 +17,17 @@
     		<tr>
                 <td><a href="/list/{{ each.id }}">{{ each.title }}</a></td>
                 <td>
-                    <form action="/list/{{each.id}}">
-                        {{ form.csrf_token }}
+                    <form action="/list/{{ each.id }}">
                         <input type="hidden" name="_method" value="DELETE">
-                        <input type="hidden" name="list_id" value="{{ each.id }}">
                         <input type="submit" value="Удалить">
                     </form>
+                </td>
+                <td>
+                	<form action="/list/{{ each.id }}">
+                		<input type="hidden" name="_method" value="PUT">
+                		<input type="text" name="new_title">
+                		<input type="submit" name="Изменить">
+                	</form>
                 </td>
             </tr>
     	{% endfor %}		

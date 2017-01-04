@@ -17,7 +17,8 @@ def reg():
     # if form.validate... переделать
 
     if form.validate_username(form.username.data):
-        flash('Пользователь с таким именем уже существует.', 'alert alert-warning')
+        flash('Пользователь с таким именем уже существует.',
+              'alert alert-warning')
         return render_template('register.html', form=form)
 
     if form.validate_email(form.email.data):
@@ -69,13 +70,19 @@ def list():
 @app.route("/list/<int:list_id>", methods=['DELETE'])
 @login_required
 def list_del(list_id):
-  list_id = request.args.get('list_id')
-  todo_list = TodoList.query.filter_by(id=list_id).first()
-  db.session.delete(todo_list)
-  db.session.commit()
-  return redirect(url_for('list'))
+    todo_list = TodoList.query.filter_by(id=list_id).first()
+    db.session.delete(todo_list)
+    db.session.commit()
+    return redirect(url_for('list'))
 
 
+@app.route("/list/<int:list_id>", methods=['PUT'])
+@login_required
+def list_edit(list_id):
+    todo_list = TodoList.query.filter_by(id=list_id).first()
+    todo_list.title = request.args.get('new_title')
+    db.session.commit()
+    return redirect(url_for('list'))
 
 
 @app.route("/list/<int:list_id>", methods=['GET', 'POST'])
@@ -90,32 +97,3 @@ def todo(list_id):
         flash('Задача добавлена', 'alert alert-success')
         return redirect(url_for('todo', list_id=list_id))
     return render_template('todo.html', form=form, todo_list=todo_list)
-
-
-# @app.route("/delete/<string:todo_id>")
-# def delete(todo_id):
-#     todo = Todo.query.filter_by(id=todo_id).first()
-#     db.session.delete(todo)
-#     db.session.commit()
-#     return redirect(url_for('todo'))
-
-
-# @app.route("/list/<id>", methods=['GET', 'POST'])  
-# def todo():
-# список задач в заданном листе
-# 
-# @app.route("/list/<id>/delete/<todo_id>") / @app.route("/list/<id>/edit/<todo_id>", methods=['POST', 'DELETE'])
-# def delete():                               def edit();
-# удаление задачи                             POST - изменяем задачу DELETE - удаляем
-# 
-# @app.route("/list/<id>/edit/<todo_id>")
-# def edit():
-# изменение задачи
-# 
-# @app.route("/list/delete/<id>")
-# def deleteList():
-# удаление листа
-# 
-# @app.route("/list/edit/<id>")
-# def editList():
-# изменение листа
