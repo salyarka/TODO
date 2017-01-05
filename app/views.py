@@ -1,8 +1,18 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for
-from app.forms import RegForm, TodoForm, LogForm, ListForm
+from app.forms import RegForm, TodoForm, LogForm, ListForm, DelForm, EditForm
 from app.models import User, Todo, TodoList
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
 
 
 @app.route("/")
@@ -58,19 +68,27 @@ def logout():
 @login_required
 def list():
     form = ListForm()
+    del_form = DelForm()
+    edit_form = EditForm()
     if form.validate_on_submit():
-        todo_list = TodoList(form.title.data, form.user_id.data)
+        user_id = current_user.id
+        todo_list = TodoList(form.title.data, user_id)
         db.session.add(todo_list)
         db.session.commit()
         flash('Список добавлен', 'alert alert-success')
         return redirect(url_for('list'))
-    return render_template('todolist.html', form=form)
+    return render_template('todolist.html',
+                           form=form,
+                           del_form=del_form,
+                           edit_form=edit_form)
 
 
 @app.route("/list/<int:list_id>", methods=['DELETE'])
 @login_required
 def list_del(list_id):
-    todo_list = TodoList.query.filter_by(id=list_id).first()
+    user_id = current_user.id
+    todo_list = TodoList.query.filter_by(
+        id=list_id, user_id=user_id).first_or_404()
     db.session.delete(todo_list)
     db.session.commit()
     return redirect(url_for('list'))
@@ -79,7 +97,9 @@ def list_del(list_id):
 @app.route("/list/<int:list_id>", methods=['PUT'])
 @login_required
 def list_edit(list_id):
-    todo_list = TodoList.query.filter_by(id=list_id).first()
+    user_id = current_user.id
+    todo_list = TodoList.query.filter_by(
+        id=list_id, user_id=user_id).first_or_404()
     todo_list.title = request.args.get('new_title')
     db.session.commit()
     return redirect(url_for('list'))
@@ -89,11 +109,36 @@ def list_edit(list_id):
 @login_required
 def todo(list_id):
     form = TodoForm()
-    todo_list = TodoList.query.filter_by(id=list_id).first()
+    user_id = current_user.id
+    todo_list = TodoList.query.filter_by(
+        id=list_id, user_id=user_id).first_or_404()
     if form.validate_on_submit():
-        todo = Todo(form.title.data, form.description.data, form.list_id.data)
+        todo = Todo(form.title.data, form.description.data,
+                    todo_list.id, user_id)
         db.session.add(todo)
         db.session.commit()
         flash('Задача добавлена', 'alert alert-success')
         return redirect(url_for('todo', list_id=list_id))
     return render_template('todo.html', form=form, todo_list=todo_list)
+
+
+@app.route("/list/<int:list_id>/<int:todo_id>", methods=['DELETE'])
+@login_required
+def todo_del(list_id, todo_id):
+    user_id = current_user.id
+    todo = Todo.query.filter_by(
+        id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for('todo', list_id=list_id))
+
+
+@app.route("/list/<int:list_id>/<int:todo_id>", methods=['PUT'])
+@login_required
+def todo_edit(list_id, todo_id):
+    user_id = current_user.id
+    todo = Todo.query.filter_by(
+        id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
+    todo.title = request.args.get('new_title')
+    db.session.commit()
+    return redirect(url_for('todo', list_id=list_id))

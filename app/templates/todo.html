@@ -3,13 +3,7 @@
 
 {% block page_content %}
 	<div class="col-sm-3 sidenav">
-		<form method="POST">
-            {{ form.csrf_token }}
-            {{ form.title }}
-            {{ form.description }}
-            {{ form.list_id(value=todo_list.id) }}
-            {{ form.create }}
-        </form>
+        {{ wtf.quick_form(form) }}
     </div>
     <div class="col-sm-9">
     	<h1>{{ todo_list.title }}</h1>
@@ -27,7 +21,20 @@
     					<tr>
     						<td>{{ each.title }}</td>
     						<td>{{ each.description }}</td>
-    						<td>{{ each.date_created }}</td>		
+    						<td>{{ each.date_created }}</td>
+                            <td>
+                                <form action="{{ url_for('todo_del', list_id=each.list_id, todo_id=each.id) }}">  
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="submit" value="Удалить">
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('todo_edit', list_id=each.list_id, todo_id=each.id) }}">  
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="text" name="new_title">
+                                    <input type="submit" value="Изменить">
+                                </form>
+                            </td>
     					</tr>
     				{% endfor %}
     			</tbody>
