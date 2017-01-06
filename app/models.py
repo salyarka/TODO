@@ -41,14 +41,16 @@ class Todo(db.Model):
     description = db.Column(db.Text)
     date_created = db.Column(db.TIMESTAMP, default=datetime.utcnow)
     status = db.Column(db.Boolean, default=0)
+    deadline = db.Column(db.Date)
     list_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, title, description, list_id, user_id):
+    def __init__(self, title, description, list_id, user_id, deadline=None):
         self.title = title
         self.description = description
         self.list_id = list_id
         self.user_id = user_id
+        self.deadline = deadline
 
 
 class TodoList(db.Model):

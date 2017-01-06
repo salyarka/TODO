@@ -114,7 +114,7 @@ def todo(list_id):
         id=list_id, user_id=user_id).first_or_404()
     if form.validate_on_submit():
         todo = Todo(form.title.data, form.description.data,
-                    todo_list.id, user_id)
+                    todo_list.id, user_id, form.deadline.data)
         db.session.add(todo)
         db.session.commit()
         flash('Задача добавлена', 'alert alert-success')
@@ -140,5 +140,16 @@ def todo_edit(list_id, todo_id):
     todo = Todo.query.filter_by(
         id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
     todo.title = request.args.get('new_title')
+    db.session.commit()
+    return redirect(url_for('todo', list_id=list_id))
+
+
+@app.route("/list/<int:list_id>/<int:todo_id>", methods=['PATCH'])
+@login_required
+def mark_done(list_id, todo_id):
+    user_id = current_user.id
+    todo = Todo.query.filter_by(
+        id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
+    todo.status = True
     db.session.commit()
     return redirect(url_for('todo', list_id=list_id))

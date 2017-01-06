@@ -19,9 +19,15 @@
     			<tbody>
     				{% for each in todo_list.todos %}
     					<tr>
+                        {% if each.status == 1 %}
+                            <td><s>{{ each.title }}</s></td>
+                            <td><s>{{ each.description }}</s></td>
+                            <td><s>{{ each.date_created.strftime('%d-%m-%Y') }}</s></td>
+                        {% else %}
     						<td>{{ each.title }}</td>
     						<td>{{ each.description }}</td>
-    						<td>{{ each.date_created }}</td>
+    						<td>{{ each.date_created.strftime('%d-%m-%Y') }}</td>
+                        {% endif %}
                             <td>
                                 <form action="{{ url_for('todo_del', list_id=each.list_id, todo_id=each.id) }}">  
                                     <input type="hidden" name="_method" value="DELETE">
@@ -33,6 +39,12 @@
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="text" name="new_title">
                                     <input type="submit" value="Изменить">
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('mark_done', list_id=each.list_id, todo_id=each.id) }}">  
+                                    <input type="hidden" name="_method" value="PATCH">
+                                    <input type="submit" value="Выполнить">
                                 </form>
                             </td>
     					</tr>

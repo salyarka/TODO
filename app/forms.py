@@ -1,13 +1,15 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, HiddenField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, DateField
+from wtforms.validators import Required, Length, Email, Regexp,\
+    EqualTo, Optional
 from app.models import User
 
 
 class TodoForm(FlaskForm):
     title = StringField('Новая задача', validators=[Required()])
     description = StringField('Описание')
-    list_id = HiddenField()
+    deadline = DateField('Pick a Date', format="%d.%m.%Y",
+                         validators=[Optional()])
     create = SubmitField('Создать')
 
 
