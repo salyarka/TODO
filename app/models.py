@@ -45,9 +45,8 @@ class Todo(db.Model):
     list_id = db.Column(db.Integer, db.ForeignKey('todo_list.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, title, description, list_id, user_id, deadline=None):
+    def __init__(self, title, list_id, user_id, deadline=None):
         self.title = title
-        self.description = description
         self.list_id = list_id
         self.user_id = user_id
         self.deadline = deadline
@@ -59,7 +58,8 @@ class TodoList(db.Model):
     title = db.Column(db.String(128))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     todos = db.relationship(
-        'Todo', cascade="all, delete-orphan", backref='todo_list')
+        'Todo', cascade="all, delete-orphan",
+        backref='todo_list', lazy='dynamic')
 
     def __init__(self, title, user_id):
         self.title = title

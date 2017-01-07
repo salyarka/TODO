@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for
-from app.forms import RegForm, TodoForm, LogForm, ListForm, DelForm, EditForm
+from app.forms import RegForm, TodoForm, LogForm, ListForm
 from app.models import User, Todo, TodoList
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -25,11 +25,6 @@ def reg():
     form = RegForm()
 
     # if form.validate... переделать
-
-    if form.validate_username(form.username.data):
-        flash('Пользователь с таким именем уже существует.',
-              'alert alert-warning')
-        return render_template('register.html', form=form)
 
     if form.validate_email(form.email.data):
         flash('Такой email уже зарегистрирован.', 'alert alert-warning')
@@ -68,8 +63,6 @@ def logout():
 @login_required
 def list():
     form = ListForm()
-    del_form = DelForm()
-    edit_form = EditForm()
     if form.validate_on_submit():
         user_id = current_user.id
         todo_list = TodoList(form.title.data, user_id)
@@ -77,10 +70,7 @@ def list():
         db.session.commit()
         flash('Список добавлен', 'alert alert-success')
         return redirect(url_for('list'))
-    return render_template('todolist.html',
-                           form=form,
-                           del_form=del_form,
-                           edit_form=edit_form)
+    return render_template('todolist.html', form=form)
 
 
 @app.route("/list/<int:list_id>", methods=['DELETE'])
@@ -112,14 +102,17 @@ def todo(list_id):
     user_id = current_user.id
     todo_list = TodoList.query.filter_by(
         id=list_id, user_id=user_id).first_or_404()
+    during = todo_list.todos.filter(Todo.status == 0).all()
+    finished = todo_list.todos.filter(Todo.status == 1).all()
     if form.validate_on_submit():
-        todo = Todo(form.title.data, form.description.data,
-                    todo_list.id, user_id, form.deadline.data)
+        todo = Todo(form.title.data, todo_list.id, user_id, form.deadline.data)
         db.session.add(todo)
         db.session.commit()
         flash('Задача добавлена', 'alert alert-success')
         return redirect(url_for('todo', list_id=list_id))
-    return render_template('todo.html', form=form, todo_list=todo_list)
+    return render_template(
+        'todo.html', form=form, todo_list=todo_list,
+        finished=finished, during=during)
 
 
 @app.route("/list/<int:list_id>/<int:todo_id>", methods=['DELETE'])
@@ -140,6 +133,7 @@ def todo_edit(list_id, todo_id):
     todo = Todo.query.filter_by(
         id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
     todo.title = request.args.get('new_title')
+    todo.description = request.args.get('description')
     db.session.commit()
     return redirect(url_for('todo', list_id=list_id))
 
@@ -150,6 +144,9 @@ def mark_done(list_id, todo_id):
     user_id = current_user.id
     todo = Todo.query.filter_by(
         id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
-    todo.status = True
+    if todo.status is False:
+        todo.status = True
+    else:
+        todo.status = False
     db.session.commit()
     return redirect(url_for('todo', list_id=list_id))

@@ -7,52 +7,121 @@
     </div>
     <div class="col-sm-9">
     	<h1>{{ todo_list.title }}</h1>
-    	{% if todo_list.todos|length > 0%}
-    		<table class="table text-left">
-    			<thead>
-    				<tr>
-    					<th>Задача</th>
-    					<th>Описание</th>
-    					<th>Дата добавления</th>
-    				</tr>
-    			</thead>
-    			<tbody>
-    				{% for each in todo_list.todos %}
-    					<tr>
-                        {% if each.status == 1 %}
-                            <td><s>{{ each.title }}</s></td>
-                            <td><s>{{ each.description }}</s></td>
-                            <td><s>{{ each.date_created.strftime('%d-%m-%Y') }}</s></td>
-                        {% else %}
-    						<td>{{ each.title }}</td>
-    						<td>{{ each.description }}</td>
-    						<td>{{ each.date_created.strftime('%d-%m-%Y') }}</td>
-                        {% endif %}
+        {% if during|length > 0 %}
+            <table class="table text-left">
+                <thead>
+                    <tr>
+                        <th>Задача</th>
+                        <th>Дата добавления</th>
+                        <th>Дата окончания</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for each in during %}
+                        <tr>
+                            <td>{{ each.title }}</td>
+                            <td>{{ each.date_created.strftime('%d-%m-%Y') }}</td>
+                            <td>
+                                {% if each.deadline %}
+                                    {{ each.deadline.strftime('%d-%m-%Y') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>
                                 <form action="{{ url_for('todo_del', list_id=each.list_id, todo_id=each.id) }}">  
                                     <input type="hidden" name="_method" value="DELETE">
-                                    <input type="submit" value="Удалить">
+                                    <button type="submit" class="btn btn-danger">Удалить</button>
                                 </form>
                             </td>
                             <td>
-                                <form action="{{ url_for('todo_edit', list_id=each.list_id, todo_id=each.id) }}">  
-                                    <input type="hidden" name="_method" value="PUT">
-                                    <input type="text" name="new_title">
-                                    <input type="submit" value="Изменить">
-                                </form>
+                                <button class="btn btn-info" data-toggle="modal" data-target="#{{ each.id }}">
+                                    Описание
+                                </button>
+                                <div class="modal fade" id="{{ each.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">Описание задачи "{{ each.title }}"</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                    <form action="{{ url_for('todo_edit', list_id=each.list_id, todo_id=each.id) }}">  
+                                                        <input type="hidden" name="_method" value="PUT">
+                                                        <label for="new_title">Название</label>
+                                                        <input type="text" name="new_title" value="{{ each.title }}">
+                                                        <label for="description">Описание</label>
+                                                        {% if each.description %}
+                                                            <textarea class="form-control" rows="3" name="description">{{ each.description }}</textarea>
+                                                        {% else %}
+                                                            <textarea class="form-control" rows="3" name="description"></textarea>
+                                                        {% endif %}    
+                                                        <button type="submit" class="btn btn-warning">Сохранить и закрыть</button>
+                                                    </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
                             </td>
                             <td>
                                 <form action="{{ url_for('mark_done', list_id=each.list_id, todo_id=each.id) }}">  
                                     <input type="hidden" name="_method" value="PATCH">
-                                    <input type="submit" value="Выполнить">
+                                    <button type="submit" class="btn btn-success">Выполнить</button>
                                 </form>
                             </td>
-    					</tr>
-    				{% endfor %}
-    			</tbody>
-    		</table>
-    	{% else %}
-    		<h3>На данный момент в этом списке нет задач.</h3>
-    	{% endif %}		
-    </div>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elif finished|length < 1 %}
+            <h3>В этом списке пока что нет задач</h3>
+        {% endif %}
+        {% if finished|length > 0 %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                            Выполненные задачи
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table class="table text-left">
+                            <thead>
+                                <tr>
+                                    <th>Задача</th>
+                                    <th>Описание</th>
+                                    <th>Дата добавления</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for each in finished %}
+                                    <tr>
+                                        <td><s>{{ each.title }}</s></td>
+                                        <td><s>{{ each.description }}</s></td>
+                                        <td><s>{{ each.date_created.strftime('%d-%m-%Y') }}</s></td>
+                                        <td>
+                                            <form action="{{ url_for('todo_del', list_id=each.list_id, todo_id=each.id) }}">  
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <button type="submit" class="btn btn-danger">Удалить</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('mark_done', list_id=each.list_id, todo_id=each.id) }}">  
+                                                <input type="hidden" name="_method" value="PATCH">
+                                                <button type="submit" class="btn btn-warning">Возобновить</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}	
+    </div>    
 {% endblock %}
