@@ -60,9 +60,12 @@ def todo(list_id):
     user_id = current_user.id
     todo_list = TodoList.query.filter_by(
         id=list_id, user_id=user_id).first_or_404()
+    # REMAKE: передовать в представления все задачи
+    # и там их разбирать
     during = todo_list.todos.order_by(
         (Todo.deadline.desc())).filter(Todo.status == 0).all()
     finished = todo_list.todos.filter(Todo.status == 1).all()
+    # !!!
     now = datetime.date.today()
     if form.validate_on_submit():
         todo = Todo(form.title.data, todo_list.id, user_id, form.deadline.data)
