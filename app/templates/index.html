@@ -2,8 +2,8 @@
 
 {% block page_content %}
     {% if current_user.is_authenticated %}
-  		<h1>Здравствуйте {{ current_user.username }}!</h1>
-  	{% else %}	
-  		<h1>Здравствуйте, чтобы просмотреть список дел вам необходимо авторизоваться</h1>
-	{% endif %}
+        <h1>Здравствуйте {{ current_user.username }}!</h1>
+    {% else %}
+        <h1>Для просмотра списка дел необходима авторизация</h1>
+    {% endif %}
 {% endblock %}

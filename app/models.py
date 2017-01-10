@@ -1,19 +1,12 @@
-from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app import login_manager
-from flask import redirect, url_for
 from datetime import datetime
+from app import db, login_manager
 
 
 @login_manager.user_loader
 def get_user(ident):
     return User.query.get(int(ident))
-
-
-@login_manager.unauthorized_handler
-def unauthorized_callback():
-    return redirect(url_for('login'))
 
 
 class User(db.Model, UserMixin):

@@ -12,6 +12,10 @@ bootstrap = Bootstrap(app)
 manager = Manager(app)
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
-app.config.from_object('app.config')
-
-import app.views
+app.config.from_object('app.config.DefaultConfig')
+from .main import main
+from .auth import auth
+from .utils import utils
+app.register_blueprint(main)
+app.register_blueprint(auth)
+app.register_blueprint(utils)

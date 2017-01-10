@@ -1,12 +1,26 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/todo-style.css', _external=True) }}">
+{% endblock %}
 {% block page_content %}
-	<div class="col-sm-3 sidenav">
+    <div class="col-sm-3 sidenav">
         {{ wtf.quick_form(form) }}
+        <h3>Списки</h3>
+        <ul class="list-group" id="side_list">
+            {% for each in current_user.todo_lists %}
+                <li class="list-group-item" id="{% if each.id == todo_list.id %}current{% endif %}">
+                    <div>
+                        <a class="list-link" href="{{ url_for('main.todo', list_id=each.id) }}">{{ each.title }}</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
     <div class="col-sm-9">
-    	<h1>{{ todo_list.title }}</h1>
+        <h1>{{ todo_list.title }}</h1>
         {% if during|length > 0 %}
             <table class="table text-left">
                 <thead>
@@ -18,18 +32,18 @@
                 </thead>
                 <tbody>
                     {% for each in during %}
-                        <tr>
+                        <tr class="{% if each.deadline and each.deadline <= now %}danger{% endif %}">
                             <td>{{ each.title }}</td>
-                            <td>{{ each.date_created.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ each.date_created.strftime('%d.%m.%Y') }}</td>
                             <td>
                                 {% if each.deadline %}
-                                    {{ each.deadline.strftime('%d-%m-%Y') }}
+                                    {{ each.deadline.strftime('%d.%m.%Y') }}
                                 {% else %}
                                     -
                                 {% endif %}
                             </td>
                             <td>
-                                <form action="{{ url_for('todo_del', list_id=each.list_id, todo_id=each.id) }}">  
+                                <form action="{{ url_for('main.todo_del', list_id=each.list_id, todo_id=each.id) }}">  
                                     <input type="hidden" name="_method" value="DELETE">
                                     <button type="submit" class="btn btn-danger">Удалить</button>
                                 </form>
@@ -46,16 +60,20 @@
                                                 <h4 class="modal-title" id="myModalLabel">Описание задачи "{{ each.title }}"</h4>
                                             </div>
                                             <div class="modal-body">
-                                                    <form action="{{ url_for('todo_edit', list_id=each.list_id, todo_id=each.id) }}">  
+                                                    <form action="{{ url_for('main.todo_edit', list_id=each.list_id, todo_id=each.id) }}">
                                                         <input type="hidden" name="_method" value="PUT">
-                                                        <label for="new_title">Название</label>
-                                                        <input type="text" name="new_title" value="{{ each.title }}">
-                                                        <label for="description">Описание</label>
-                                                        {% if each.description %}
-                                                            <textarea class="form-control" rows="3" name="description">{{ each.description }}</textarea>
-                                                        {% else %}
-                                                            <textarea class="form-control" rows="3" name="description"></textarea>
-                                                        {% endif %}    
+                                                        <div class="form-group">
+                                                            <label for="new_title">Название</label>
+                                                            <input type="text" class="form-control" name="new_title" value="{{ each.title }}">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="description">Описание</label>
+                                                            {% if each.description %}
+                                                                <textarea class="form-control" rows="3" name="description">{{ each.description }}</textarea>
+                                                            {% else %}
+                                                                <textarea class="form-control" rows="3" name="description"></textarea>
+                                                            {% endif %}    
+                                                        </div>    
                                                         <button type="submit" class="btn btn-warning">Сохранить и закрыть</button>
                                                     </form>
                                             </div>
@@ -66,7 +84,7 @@
                             <td>
                             </td>
                             <td>
-                                <form action="{{ url_for('mark_done', list_id=each.list_id, todo_id=each.id) }}">  
+                                <form action="{{ url_for('main.mark_done', list_id=each.list_id, todo_id=each.id) }}">  
                                     <input type="hidden" name="_method" value="PATCH">
                                     <button type="submit" class="btn btn-success">Выполнить</button>
                                 </form>
@@ -104,13 +122,13 @@
                                         <td><s>{{ each.description }}</s></td>
                                         <td><s>{{ each.date_created.strftime('%d-%m-%Y') }}</s></td>
                                         <td>
-                                            <form action="{{ url_for('todo_del', list_id=each.list_id, todo_id=each.id) }}">  
+                                            <form action="{{ url_for('main.todo_del', list_id=each.list_id, todo_id=each.id) }}">  
                                                 <input type="hidden" name="_method" value="DELETE">
                                                 <button type="submit" class="btn btn-danger">Удалить</button>
                                             </form>
                                         </td>
                                         <td>
-                                            <form action="{{ url_for('mark_done', list_id=each.list_id, todo_id=each.id) }}">  
+                                            <form action="{{ url_for('main.mark_done', list_id=each.list_id, todo_id=each.id) }}">  
                                                 <input type="hidden" name="_method" value="PATCH">
                                                 <button type="submit" class="btn btn-warning">Возобновить</button>
                                             </form>
