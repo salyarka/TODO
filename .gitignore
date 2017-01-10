@@ -1,3 +1,7 @@
 /venv/
-/__pycache__/
 __pycache__/*
+start.sh
+.gitignore
+*.pyc
+/logs/
+

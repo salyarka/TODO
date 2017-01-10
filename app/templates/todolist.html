@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+    <div class="col-sm-3 sidenav">
+        {{ wtf.quick_form(form) }}
+    </div>
+    <div class="col-sm-9">
+        <h1>Списки</h1>   
+        <table class="table text-center">
+            <tbody>
+                {% for each in current_user.todo_lists %}
+                    <tr>
+                        <td><h4><a href="{{ url_for('main.todo', list_id=each.id) }}">{{ each.title }}</a></h4></td>
+                        <td>
+                            <form action="{{ url_for('main.todo', list_id=each.id) }}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                        <td>
+                            <button class="btn btn-info" data-toggle="modal" data-target="#{{ each.id }}">
+                                Изменить
+                            </button>
+                            <div class="modal fade" id="{{ each.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ url_for('main.todo', list_id=each.id) }}">
+                                                <input type="hidden" name="_method" value="PUT">
+                                                <div class="form-group">
+                                                    <label for="new_title">Название</label>
+                                                    <input type="text" class="form-control" name="new_title" value="{{ each.title }}">
+                                                </div>    
+                                                <button type="submit" class="btn btn-warning">Сохранить и закрыть</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
