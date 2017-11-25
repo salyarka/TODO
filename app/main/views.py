@@ -107,9 +107,7 @@ def mark_done(list_id, todo_id):
     user_id = current_user.id
     todo = Todo.query.filter_by(
         id=todo_id, list_id=list_id, user_id=user_id).first_or_404()
-    if todo.status is False:
+    if not todo.status:
         todo.status = True
-    else:
-        todo.status = False
     db.session.commit()
     return redirect(url_for('main.todo', list_id=list_id))
